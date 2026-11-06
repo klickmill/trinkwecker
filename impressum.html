@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Impressum und Anbieterkennzeichnung des Trinkweckers.">
+<meta name="theme-color" id="theme-farbe" content="#0d1117">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='27' font-size='27'>&#128167;</text></svg>">
+<meta name="robots" content="noindex">
+<title>Impressum · Trinkwecker</title>
+<style>
+  /* Dunkel ist der Grundzustand. Das helle Set steht darunter und greift über
+     data-theme am html-Element oder, bei Auto, über die Systemeinstellung. */
+  :root {
+    color-scheme: dark;
+
+    --bg: #0d1117;
+    --bg-oben: #14202b;
+    --card: #161b22;
+    --card-rand: #232a33;
+    --rand-stark: #3a444f;
+    --panel: #0f141a;
+    --vertieft: #0b0f14;
+
+    --text: #e6edf3;
+    --text-leise: #8b949e;
+    --text-schwach: #7b8896;
+
+    --mint: #3ddc97;
+    --mint-dunkel: #2bb87b;
+    --mint-text: #3ddc97;
+    --auf-mint: #05130c;
+    --mint-schatten: rgba(61, 220, 151, .28);
+
+    --saeule-leer: #38434f;
+    --linie-stark: rgba(230, 237, 243, .55);
+    --backdrop: rgba(5, 9, 13, .74);
+    --schatten: rgba(0, 0, 0, .45);
+    --schatten-dialog: rgba(0, 0, 0, .6);
+  }
+
+  /* Helles Set. Jeder Textton hält mindestens 4,5 zu 1 gegen seinen Untergrund,
+     und Mint wird für Text deutlich dunkler, weil das helle Grün auf Weiß
+     verschwinden würde. Flächen dürfen das hellere Grün behalten.
+     Der Block steht zweimal: einmal für die ausdrückliche Wahl, einmal für Auto.
+     Eine Media Query lässt sich nicht in dieselbe Selektorliste ziehen. */
+  :root[data-theme="hell"] {
+    color-scheme: light;
+
+    --bg: #f2f5f9;
+    --bg-oben: #e2ebf4;
+    --card: #ffffff;
+    --card-rand: #dbe2ea;
+    --rand-stark: #aab4c1;
+    --panel: #f5f8fb;
+    --vertieft: #eaeff5;
+
+    --text: #16202b;
+    --text-leise: #5b6675;
+    --text-schwach: #67717f;
+
+    --mint: #22c07f;
+    --mint-dunkel: #0f9c63;
+    --mint-text: #0a7d4d;
+    --auf-mint: #05130c;
+    --mint-schatten: rgba(34, 192, 127, .3);
+
+    --saeule-leer: #c9d2dc;
+    --linie-stark: rgba(22, 32, 43, .45);
+    --backdrop: rgba(30, 42, 58, .42);
+    --schatten: rgba(20, 35, 55, .1);
+    --schatten-dialog: rgba(20, 35, 55, .22);
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dunkel"]) {
+      color-scheme: light;
+
+      --bg: #f2f5f9;
+      --bg-oben: #e2ebf4;
+      --card: #ffffff;
+      --card-rand: #dbe2ea;
+      --rand-stark: #aab4c1;
+      --panel: #f5f8fb;
+      --vertieft: #eaeff5;
+
+      --text: #16202b;
+      --text-leise: #5b6675;
+      --text-schwach: #67717f;
+
+      --mint: #22c07f;
+      --mint-dunkel: #0f9c63;
+      --mint-text: #0a7d4d;
+      --auf-mint: #05130c;
+      --mint-schatten: rgba(34, 192, 127, .3);
+
+      --saeule-leer: #c9d2dc;
+      --linie-stark: rgba(22, 32, 43, .45);
+      --backdrop: rgba(30, 42, 58, .42);
+      --schatten: rgba(20, 35, 55, .1);
+      --schatten-dialog: rgba(20, 35, 55, .22);
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html { height: 100%; }
+
+  body {
+    margin: 0;
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: radial-gradient(1200px 600px at 50% -10%, var(--bg-oben) 0%, var(--bg) 60%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .huelle {
+    width: 100%;
+    max-width: 480px;
+    margin: auto;
+  }
+
+  .karte {
+    background: var(--card);
+    border: 1px solid var(--card-rand);
+    border-radius: 22px;
+    padding: 26px 26px 22px;
+    box-shadow: 0 24px 60px var(--schatten);
+  }
+
+  .zurueck {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 15px;
+    border: 1px solid var(--card-rand);
+    border-radius: 999px;
+    color: var(--text-leise);
+    font-size: .85rem;
+    text-decoration: none;
+    transition: color .2s ease, border-color .2s ease;
+  }
+
+  .zurueck:hover { color: var(--text); border-color: var(--rand-stark); }
+  .zurueck:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+  h1 {
+    margin: 0 0 6px;
+    font-size: 1.45rem;
+    letter-spacing: -.01em;
+  }
+
+  .untertitel {
+    margin: 0 0 20px;
+    color: var(--text-leise);
+    font-size: .85rem;
+  }
+
+  h2 {
+    margin: 26px 0 8px;
+    font-size: .95rem;
+    color: var(--mint-text);
+  }
+
+  p, li {
+    margin: 0 0 10px;
+    font-size: .9rem;
+    line-height: 1.6;
+    color: var(--text-leise);
+  }
+
+  ul {
+    margin: 0 0 12px;
+    padding-left: 20px;
+  }
+
+  li { margin-bottom: 6px; }
+
+  strong { color: var(--text); font-weight: 600; }
+
+  a { color: var(--mint-text); }
+
+  .merker {
+    margin: 0 0 6px;
+    padding: 13px 15px;
+    background: var(--panel);
+    border: 1px dashed var(--mint-dunkel);
+    border-radius: 12px;
+    font-size: .85rem;
+    line-height: 1.55;
+    color: var(--text-leise);
+  }
+
+  .bedingt {
+    margin: -4px 0 12px;
+    font-size: .78rem;
+    color: var(--text-schwach);
+  }
+
+  .angaben {
+    margin: 0 0 12px;
+  }
+
+  /* Beschriftung immer über dem Wert: die Angaben sind zu lang für zwei
+     Spalten, und ein einheitlicher Umbruch wirkt ruhiger als ein gemischter. */
+  .angaben div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--card-rand);
+    font-size: .9rem;
+    line-height: 1.5;
+    color: var(--text-leise);
+  }
+
+  .angaben div:last-child { border-bottom: 0; }
+
+  .angaben dt {
+    font-size: .82rem;
+    color: var(--text);
+  }
+
+  .angaben dd { margin: 0; }
+
+  .fuss {
+    margin-top: 26px;
+    padding-top: 16px;
+    border-top: 1px solid var(--card-rand);
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: .8rem;
+    color: var(--text-leise);
+  }
+
+  .fuss a { color: inherit; text-decoration: none; }
+  .fuss a:hover { color: var(--text); text-decoration: underline; }
+  .fuss a:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; border-radius: 4px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zurueck { transition: none; }
+  }
+</style>
+
+<script>
+// Läuft vor dem ersten Zeichnen, damit bei heller Wahl nichts dunkel aufblitzt.
+// Die Farbe für die Browserleiste kommt aus der Variablen, die dann schon gilt.
+(function () {
+  "use strict";
+  var wurzel = document.documentElement;
+  var thema = "auto";
+  try {
+    var roh = localStorage.getItem("trinkwecker");
+    if (roh) {
+      var wert = JSON.parse(roh).thema;
+      if (wert === "hell" || wert === "dunkel") thema = wert;
+    }
+  } catch (e) {
+    // Ohne Speicher bleibt es bei Auto.
+  }
+  wurzel.setAttribute("data-theme", thema);
+
+  var meta = document.getElementById("theme-farbe");
+  var farbe = getComputedStyle(wurzel).getPropertyValue("--bg").trim();
+  if (meta && farbe) meta.setAttribute("content", farbe);
+})();
+</script>
+</head>
+<body>
+  <div class="huelle">
+    <main class="karte">
+      <a class="zurueck" href="index.html">&#8592; Zurück zum Trinkwecker</a>
+
+      <h1>Impressum</h1>
+      <p class="untertitel">Anbieterkennzeichnung</p>
+
+      <h2>Betreiber</h2>
+      <dl class="angaben">
+        <div>
+          <dt>Firma</dt>
+          <dd>JR COACHING &amp; CONSULTING LTD</dd>
+        </div>
+        <div>
+          <dt>Vertreten durch</dt>
+          <dd>Julian Riegler (Direktor)</dd>
+        </div>
+        <div>
+          <dt>Registereintrag</dt>
+          <dd>Registrar of Companies, Republik Zypern, Nr. HE 482984</dd>
+        </div>
+        <div>
+          <dt>Anschrift</dt>
+          <dd>Karatza 32<br>3020 Limassol<br>Zypern</dd><!-- RECHT_ANSCHRIFT -->
+        </div>
+        <div>
+          <dt>E-Mail</dt>
+          <dd><a href="mailto:kontakt@klickmill.app">kontakt@klickmill.app</a></dd><!-- RECHT_EMAIL -->
+        </div>
+      </dl>
+
+      <h2>Inhaltlich verantwortlich</h2>
+      <p>Julian Riegler, Anschrift wie oben.</p>
+
+      <h2>Verbraucherstreitbeilegung</h2>
+      <p>
+        Wir sind nicht verpflichtet und nicht bereit, an Verfahren vor einer
+        Verbraucherschlichtungsstelle teilzunehmen.
+      </p>
+
+      <h2>Haftung</h2>
+      <p>
+        Die Inhalte dieser Seiten werden mit Sorgfalt erstellt. Für die Richtigkeit,
+        Vollständigkeit und Aktualität wird keine Gewähr übernommen. Der Trinkwecker ist eine
+        einfache Zählhilfe und ersetzt keine medizinische Beratung.
+      </p>
+      <p>
+        Für Inhalte externer Links ist ausschließlich deren Betreiber verantwortlich. Zum
+        Zeitpunkt der Verlinkung waren keine Rechtsverstöße erkennbar. Werden solche bekannt,
+        werden die Links entfernt.
+      </p>
+
+      <h2>Urheberrecht</h2>
+      <p>
+        Inhalte und Gestaltung dieser Seiten unterliegen dem Urheberrecht.
+      </p>
+
+      <h2>Datenschutz</h2>
+      <p>
+        Wie der Trinkwecker mit Daten umgeht, steht in der
+        <a href="datenschutz.html">Datenschutzerklärung</a>. Kurz gefasst: Alle Trinkdaten
+        bleiben im Browser auf dem eigenen Gerät.
+      </p>
+
+      <footer class="fuss">
+        <a href="index.html">Trinkwecker</a>
+        <span aria-hidden="true">·</span>
+        <a href="datenschutz.html">Datenschutz</a>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
