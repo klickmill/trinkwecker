@@ -45,10 +45,27 @@ Zähler, Erinnerungen und Wochenansicht funktionieren dann ebenfalls, nur Instal
 und Offline-Betrieb nicht, und manche Browser blockieren bei direkt geöffneten Dateien
 den localStorage.
 
-## Stand 29.10.2026 (Cache v18, nur lokal)
+## Stand 7.11.2026 (Cache v19 und v20, live seit 7.11.)
+
+- v20: Datenschutzerklärung nennt den Widerruf der Einwilligung für die Kontaktangabe im Feedback (Art. 13 Abs. 2 lit. c DSGVO).
+- iPhone und iPad im normalen Safari-Tab: dort gibt es keine Mitteilungen, erst in der Web-App vom Home-Bildschirm (ab iOS 16.4).
+  Quellen: MDN browser-compat-data `api/Notification.json` (safari_ios 16.4: „The `Notification` interface is undefined, unless the
+  page is a web app saved to the home screen“, Meldungen nur über `showNotification` aus dem Service Worker) und WebKit-Blog
+  „Web Push for Web Apps on iOS and iPadOS“ (16.2.2023). Statt „Dieser Browser kann keine Erinnerungen anzeigen“ zeigt die App dort
+  eine Anleitung, und der Knopf „Anleitung öffnen“ öffnet den Schritt „Auf den Home-Bildschirm“. Anlass: ein
+  Handytest am 29.10.2026 („Erinnerung kann ich nicht einschalten“). Ob Erinnerungen in der Home-Bildschirm-App auch kommen, wenn sie
+  im Hintergrund liegt, ist auf einem echten iPhone noch ungeprüft; die App plant mit setTimeout, iOS hält Web-Apps im Hintergrund nach
+  allgemeinem Wissen an, deshalb sagt der Text „vermutlich nur, solange der Trinkwecker vorne offen ist“. Ebenfalls ungeprüft: ob
+  die App vom Home-Bildschirm den Speicher aus dem Safari-Tab sieht (Hinweis auf Sicherung in der Anleitung). Die Anleitung erscheint
+  nur, wenn es im Tab wirklich keine Mitteilungen gibt; der allgemeine Absatz (Tab, Browser fragt) ist auf iPhone und iPad ersetzt.
+- Android: laut derselben MDN-Quelle wirft `new Notification()` in Chrome auf Android immer einen TypeError; der Weg über den
+  Service Worker (v18) ist also nötig. Auf einem echten Android-Gerät weiter ungeprüft.
+
+## Stand 29.10.2026 (Cache v18, live seit 29.10.)
 
 - Erinnerungen laufen zuerst über den Service Worker (`showNotification`), der alte Weg `new Notification()` bleibt als Ersatz. Grund: Chrome auf Android lässt den alten Weg nach allgemeinem Wissen nicht zu, dann schaltete die App die Erinnerungen nach der ersten fälligen Meldung still ab. Beim Einschalten kommt eine Probe-Meldung. **Auf einem echten Android-Handy und iPhone noch ungeprüft**; bis es geprüft ist, gilt der Fehler nicht als behoben.
 - Schalter „Zähler abschalten“ wie in den anderen Klickmill-Apps; gilt in der laufenden Sitzung über das Kästchen.
+- Lighthouse-Vorher-Werte der Live-Fassung v18 (29.10.2026, Handy-Profil, Zähler gesperrt): Tempo 100, Barrierefreiheit 96 (nur die kleinen Glas-Symbole, 13 x 22 px), Technik 100, Auffindbarkeit 100.
 - Beim ersten Besuch steht über dem Glas die Frage „Heute schon getrunken?“ mit Problem-Satz; Prozent und Milliliter stehen in einer Zeile.
 
 ## Bedienung

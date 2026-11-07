@@ -1207,7 +1207,7 @@
     <p>
       Das Tagesziel und die Glasgröße änderst du in den Einstellungen.
     </p>
-    <p>
+    <p id="erststart-erinnerung-text">
       Erinnerungen kommen, solange der Trinkwecker geöffnet ist. Das gilt auch, wenn du
       gerade einen anderen Tab ansiehst. Dein Browser fragt dafür einmal um Erlaubnis. Wir
       nutzen sie nur für diese Erinnerungen. Ausschalten kannst du die Erinnerungen
@@ -1332,7 +1332,7 @@
 
       <section id="wk-schritt-2" aria-labelledby="wk-titel-2" hidden>
         <h3 class="wk-titel" id="wk-titel-2" tabindex="-1">Erinnerungen</h3>
-        <p class="wk-text">
+        <p class="wk-text" id="wk-erinnerung-text">
           Der Trinkwecker kann dich in einer Zeit deiner Wahl ans Trinken erinnern.
           Voreingestellt sind 8 bis 20 Uhr. Die Erinnerungen kommen, solange der Trinkwecker
           geöffnet ist. Das gilt auch, wenn du gerade einen anderen Tab ansiehst. Dein Browser
@@ -1344,7 +1344,7 @@
       </section>
 
       <section id="wk-schritt-3" aria-labelledby="wk-titel-3" hidden>
-        <h3 class="wk-titel" id="wk-titel-3" tabindex="-1">Auf den Homescreen</h3>
+        <h3 class="wk-titel" id="wk-titel-3" tabindex="-1">Auf den Home-Bildschirm</h3>
         <p class="wk-text" id="wk-install-text"></p>
         <button class="wk-knopf" id="wk-installieren" type="button" hidden>Jetzt installieren</button>
       </section>
@@ -1451,6 +1451,10 @@
   var elErststartSchliessen = document.getElementById("erststart-schliessen");
   var elErststartErinnerungen = document.getElementById("erststart-erinnerungen");
   var elErststartStand = document.getElementById("erststart-stand");
+  var elErststartText = document.getElementById("erststart-erinnerung-text");
+  var elWkErinnerungText = document.getElementById("wk-erinnerung-text");
+  var ERSTSTART_ALLGEMEIN = elErststartText.textContent.replace(/\s+/g, " ").trim();
+  var WK_ALLGEMEIN = elWkErinnerungText.textContent.replace(/\s+/g, " ").trim();
   var elWkErinnerungen = document.getElementById("wk-erinnerungen");
   var elWkErinnerungStand = document.getElementById("wk-erinnerung-stand");
   var elWkInstallText = document.getElementById("wk-install-text");
@@ -2287,6 +2291,35 @@
     }
   }
 
+  // iPhone und iPad im normalen Safari-Tab: dort gibt es keine Mitteilungen, erst in der Web-App vom
+  // Home-Bildschirm (ab iOS 16.4; Quelle MDN browser-compat-data api/Notification.json, WebKit-Blog 16.2.2023).
+  var IPHONE_TEXT = "Auf iPhone und iPad brauchst du einen Zwischenschritt: Tippe in Safari unten auf das Teilen-Symbol " +
+    "(ein Quadrat mit Pfeil nach oben), dann auf „Zum Home-Bildschirm“. Öffne den Trinkwecker danach über das neue Symbol " +
+    "und tippe dort auf „Erinnerungen einschalten“. Das geht ab iOS 16.4.";
+  // Ehrlich, weil ungeprüft: die App plant mit setTimeout, iOS hält Web-Apps im Hintergrund nach allgemeinem Wissen an.
+  var IOS_EINSCHRAENKUNG = "Auf iPhone und iPad kommen die Erinnerungen vermutlich nur, solange der Trinkwecker vorne offen ist. " +
+    "Das haben wir auf einem echten Gerät noch nicht geprüft.";
+  // Nur dort, wo es wirklich nicht geht (nicht vorsorglich auf jedem iPhone).
+  function iphoneOhneApp() {
+    return istIOS() && !laeuftAlsApp() && !meldungenMoeglich();
+  }
+  // Statt „geht nicht“: die Anleitung zeigen und den Schritt „Auf den Homescreen“ der Einführung öffnen.
+  function iphoneAnleitung() {
+    ausschalten(IPHONE_TEXT);
+    if (!elWillkommen.open) willkommenOeffnen();
+    wkSchrittSetzen(wkAbschnitte.length);
+  }
+  // Der allgemeine Absatz (Tab, Browser fragt um Erlaubnis) stimmt auf iPhone und iPad nicht; dort ein eigener.
+  function erinnerungsAbsatz(allgemein) {
+    if (iphoneOhneApp()) return IPHONE_TEXT + " " + IOS_EINSCHRAENKUNG;
+    if (istIOS() && !meldungenMoeglich()) return "Auf diesem Gerät kann der Trinkwecker keine Erinnerungen anzeigen. " +
+      "Dafür braucht es iOS 16.4 oder neuer. Der Zähler funktioniert wie gewohnt.";
+    if (istIOS()) return "Der Trinkwecker kann dich in einer Zeit deiner Wahl ans Trinken erinnern. Dein Gerät fragt dafür einmal " +
+      "um Erlaubnis. Wir nutzen sie nur für diese Erinnerungen. " + IOS_EINSCHRAENKUNG +
+      " Ausschalten kannst du die Erinnerungen jederzeit in den Einstellungen.";
+    return allgemein;
+  }
+
   function meldungenMoeglich() {
     return typeof window.Notification === "function";
   }
@@ -2423,6 +2456,10 @@
   // Die Berechtigung wird ausschließlich hier erfragt, also direkt aus dem
   // Klick auf den Schalter heraus. Beim Laden der Seite passiert nichts.
   function einschalten() {
+    if (iphoneOhneApp()) {
+      iphoneAnleitung();
+      return;
+    }
     if (!meldungenMoeglich()) {
       ausschalten("Dieser Browser kann keine Erinnerungen anzeigen. Der Zähler funktioniert wie gewohnt weiter.");
       return;
@@ -2496,7 +2533,7 @@
     if (document.activeElement !== elBis) elBis.value = String(fensterBis);
 
     if (!meldungenMoeglich()) {
-      elErinnerungHinweis.textContent = "Dieser Browser kann keine Erinnerungen anzeigen.";
+      elErinnerungHinweis.textContent = iphoneOhneApp() ? IPHONE_TEXT : "Dieser Browser kann keine Erinnerungen anzeigen.";
     } else if (!erinnerungAn) {
       // Das Warum steht schon über dem Schalter, hier genügt der Zustand.
       elErinnerungHinweis.textContent = "Erinnerungen sind zurzeit aus.";
@@ -2563,7 +2600,9 @@
 
     var stand = erinnerungStand();
     elWkErinnerungen.disabled = stand.gesperrt;
-    elWkErinnerungStand.textContent = stand.text;
+    elWkErinnerungen.textContent = stand.iphone ? "Anleitung öffnen" : "Erinnerungen einschalten";
+    elWkErinnerungText.textContent = erinnerungsAbsatz(WK_ALLGEMEIN);
+    elWkErinnerungStand.textContent = stand.iphone ? "" : stand.text; // die Anleitung steht schon im Absatz darüber
 
     // Der Weg zum Homescreen ist je nach Gerät ein anderer.
     elWkInstallieren.hidden = !installAufforderung;
@@ -2571,8 +2610,11 @@
       elWkInstallieren.hidden = true;
       elWkInstallText.textContent = "Der Trinkwecker läuft schon als eigene App. Hier ist nichts weiter zu tun.";
     } else if (istIOS()) {
-      elWkInstallText.textContent = "Auf iPhone und iPad: in Safari unten auf Teilen tippen, dann auf " +
-        "„Zum Home-Bildschirm“. Danach startet der Trinkwecker wie eine eigene App, auch ohne Netz.";
+      elWkInstallText.textContent = "Auf iPhone und iPad: in Safari unten auf das Teilen-Symbol (Quadrat mit Pfeil nach oben) tippen, dann auf " +
+        "„Zum Home-Bildschirm“. Danach startet der Trinkwecker wie eine eigene App, auch ohne Netz. " +
+        "Öffnest du ihn von dort, kannst du auch die Erinnerungen einschalten (ab iOS 16.4). " +
+        "Dein bisheriger Stand kommt dabei vielleicht nicht mit. Dann hilft in den Einstellungen unter „Deine Daten“ " +
+        "„Sicherung speichern“ hier und „Sicherung einspielen“ dort.";
     } else if (installAufforderung) {
       elWkInstallText.textContent = "Dein Browser kann den Trinkwecker als App installieren. " +
         "Danach startet er ohne Adressleiste und auch ohne Netz.";
@@ -2584,6 +2626,9 @@
 
   // Ein Stand für beide Stellen, an denen man Erinnerungen einschalten kann.
   function erinnerungStand() {
+    if (iphoneOhneApp()) {
+      return { gesperrt: false, iphone: true, text: IPHONE_TEXT };
+    }
     if (!meldungenMoeglich()) {
       return { gesperrt: true, text: "Dieser Browser kann keine Erinnerungen anzeigen. Der Zähler funktioniert wie gewohnt." };
     }
@@ -2600,7 +2645,9 @@
     if (elErststart.hidden) return;
     var stand = erinnerungStand();
     elErststartErinnerungen.disabled = stand.gesperrt;
-    elErststartStand.textContent = stand.text;
+    elErststartErinnerungen.textContent = stand.iphone ? "Anleitung öffnen" : "Erinnerungen einschalten";
+    elErststartStand.textContent = stand.iphone ? "" : stand.text; // die Anleitung steht schon im Absatz darüber
+    elErststartText.textContent = erinnerungsAbsatz(ERSTSTART_ALLGEMEIN);
   }
 
   function wkSchrittSetzen(neu) {
